@@ -150,5 +150,5 @@ def main(token):
 
 if __name__ == '__main__':
     with open('TOKEN') as f:
-        TOKEN = f.read()
+        TOKEN = f.read().strip()
     main(TOKEN)
