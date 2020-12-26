@@ -123,19 +123,13 @@ def button(update: Update, context: CallbackContext) -> None:
             action_bot(query.message, update.effective_user)
 
 
-def help_command(update: Update, context: CallbackContext) -> None:
-    update.message.reply_text("Use /start to test this bot.")
-
-
 def main(token):
     global job_queue
     updater = Updater(token, use_context=True)
 
     job_queue = updater.job_queue
 
-    updater.dispatcher.add_handler(CommandHandler('start', start))
     updater.dispatcher.add_handler(CallbackQueryHandler(button))
-    updater.dispatcher.add_handler(CommandHandler('help', help_command))
 
     updater.dispatcher.add_handler(MessageHandler(
         Filters.status_update.new_chat_members, start))
