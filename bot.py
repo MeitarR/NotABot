@@ -3,7 +3,7 @@ import logging
 from typing import Dict
 
 from telegram import (Bot, ChatMember, ChatPermissions, InlineKeyboardButton,
-                      InlineKeyboardMarkup, Message, Update, User)
+                      InlineKeyboardMarkup, Message, ParseMode, Update, User)
 from telegram.ext import (CallbackContext, CallbackQueryHandler,
                           CommandHandler, Filters, Job, MessageHandler,
                           Updater)
@@ -45,7 +45,7 @@ jobs: Dict[int, Dict[int, Job]] = dict()
 
 def send_answer(message: Message, user: User, answer):
     message.edit_text(
-        text=f"[{user.username}](tg://user?id={user.id}) (user id: `{user.id}`) treated as *{answer}*", parse_mode='Markdown')
+        text=f"{user.mention_markdown_v2()} \(user id: `{user.id}`\) treated as *{answer}*", parse_mode=ParseMode.MARKDOWN_V2)
     job_queue.run_once(lambda c: message.delete(), DELETE_SEC)
 
 
@@ -93,10 +93,10 @@ def start(update: Update, context: CallbackContext) -> None:
 
             reply_markup = InlineKeyboardMarkup(keyboard)
 
-            msg = update.effective_chat.send_message(f'Welcome [{member.username}](tg://user?id={member.id}) (user id: `{member.id}`) to our server!\n\n'
+            msg = update.effective_chat.send_message(f'Welcome {member.mention_markdown_v2()} \(user id: `{member.id}`\) to our group\!\n\n'
                                                      f'Please state if you are *human* or *bot*\n\n'
-                                                     f'hurry up, you only have {TIMEOUT_SEC} secods',
-                                                     reply_markup=reply_markup, parse_mode='Markdown')
+                                                     f'hurry up, you only have {TIMEOUT_SEC} seconds',
+                                                     reply_markup=reply_markup, parse_mode=ParseMode.MARKDOWN_V2)
             job = job_queue.run_once(
                 lambda c: action_bot(msg, member), TIMEOUT_SEC)
             jobs[update.effective_chat.id] = {member.id: job}
